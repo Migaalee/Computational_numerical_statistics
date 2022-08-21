@@ -1,0 +1,180 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+<!-- One needs the code below in order to being able of integrating Latex with R -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+inlineMath: [['$','$'], ['\\(','\\)']],
+processEscapes: true},
+jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+TeX: {
+extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+equationNumbers: {
+autoNumber: "AMS"
+}
+}
+});
+</script>
+
+<!-- markdown report begins -->
+
+---
+title: "Computational Numerical Statistics  \n Assignment 4"
+author: "Migla Miskinyte Reis"
+date: "29.10.20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!-- the function below does not appear in the text as is here to allow us to use some colored text -->
+
+```{r echo=FALSE}
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, 
+      x)
+  } else x
+}
+```
+
+<!-- instruction below allows for some extra vertical space-->
+&nbsp;
+
+<!-- the font instruction below allows to increase fontsize and the ** gives us boldface -->
+
+<font size="4">
+
+**Exercise 4.** `r colorize("(0.1 points)", "orange")` [**Points: ____**]{style="float:right"}
+</font>
+
+Consider \[\textit{I}= \int_{0}^{1} e^{-x}(1-x)^2 \,dx \]
+
+Use m= 10000 and set.seed(1234) in all experiments. 
+
+
+**4.1** Use the R function integrate() to compute the value of the integral
+
+```{r}
+f<-function(x){exp(-x)*(1-x)^2}
+
+f_int<-integrate(f,lower=0,upper=1);f_int
+
+```
+
+**4.2** Now, we will estimate \emph{I} using the antithetic-variable-based Monte Carlo method and report an estimate of variance \textit{I}$_\textit{ant}$ using this method.
+
+```{r}
+set.seed(1234) 
+m=10000
+g <- function(x){exp(-x)*(1-x)^2} 
+x=runif(m/2,0,1)
+I.hat1=mean(g(x))
+I.hat2=mean(g(1-x))
+I.hat.a =(I.hat1+I.hat2)/2; I.hat.a
+V.a <- 1/m*(1+cor(g(x),g(1-x)))*var(g(x)); V.a
+            
+```
+
+**4.3** Next we will use MC method to estimate \emph{I} and report \textit{I}$_\textit{MC}$.
+
+```{r}
+set.seed(1234)
+m=10000
+x=runif(m,0,1)
+g <- function(x){exp(-x)*(1-x)^2}
+I.hat=(1-0)*mean(g(x));I.hat
+V.I.hat = var(g(x))/m*(1-0)^2;V.I.hat
+
+```
+
+**4.4** Next, we will estimate percentage of variance reduction when using \textit{I}$_\textit{ant}$ instead of \textit{I}$_\textit{MC}$ using the equation:
+
+\begin{center}
+
+$\textit{percentage}$=$100(1-\displaystyle\frac{V(I_2)}{V(I_1)})$
+
+\end{center}
+
+
+```{r}
+
+100*(1-V.a/V.I.hat)
+
+
+```
+**4.5** Next, we will use above described variance reduction methods to estimate \textit{I}$_\textit{ant}$ instead of \textit{I}$_\textit{MC}$ using differing m (100, 500, 1000, 5000, 1000).
+First, we create a function for antithetic-variable-based methodand estimate \emph{I} and \textit{I}$_\textit{ant}$ for different m.
+```{r}
+function_ant<-function(m){
+  set.seed(1234) 
+  f <- function(x){exp(-x)*(1-x)^2}
+  x=runif(m/2,0,1)
+  I.hat1=mean(g(x))
+  I.hat2=mean(g(1-x))
+  I.hat.a =(I.hat1+I.hat2)/2; I.hat.a
+  V.a <- 1/m*(1+cor(g(x),g(1-x)))*var(g(x)); V.a 
+  return(c(I.hat.a,V.a))
+}
+
+m100<-function_ant(100)
+m500<-function_ant(500)
+m1000<-function_ant(1000)
+m5000<-function_ant(5000)
+m10000<-function_ant(10000)
+
+```
+
+Next, we create a function for usual Monter Carlo variance reduction method and estimate \emph{I} and \textit{I}$_\textit{MC}$ for different m.
+
+```{r}
+function_mc<-function(m){
+  set.seed(1234) 
+  x=runif(m,0,1)
+  g <- function(x){exp(-x)*(1-x)^2}
+  I.hat=(1-0)*mean(g(x));I.hat
+  V.I.hat = var(g(x))/m*(1-0)^2;V.I.hat
+  return(c(I.hat.a,V.I.hat))
+}
+
+m100m<-function_mc(100)
+m500m<-function_mc(500)
+m1000m<-function_mc(1000)
+m5000m<-function_mc(5000)
+m10000m<-function_mc(10000)
+
+
+```
+We also need to estimate percentage for variance reduction for each m between our methods.
+```{r}
+perc100<-100*(1-m100[2]/m100m[2])
+perc500<-100*(1-m500[2]/m500m[2])
+perc1000<-100*(1-m1000[2]/m1000m[2])
+perc5000<-100*(1-m5000[2]/m5000m[2])
+perc10000<-100*(1-m10000[2]/m10000m[2])
+```
+
+Finally, we will make a table with our observations. We can see that variance using \textit{I}$_\textit{MC}$ is lower than \textit{I}$_\textit{ant}$ and that overall variance decreases when we increase m.
+
+```{r}
+mm<-cbind(m100m,m500m,m1000m,m5000m,m10000m) #created a matrix of vectors for table
+row.names(mm)<-c("I_ant Estimate","I_ant Variance")
+ma<-cbind(m100,m500,m1000,m5000,m10000)
+row.names(ma)<-c("I_MC Estimate","I_MC Variance")
+perc<-matrix(c(perc100,perc500,perc1000,perc5000,perc10000),1,5)
+row.names(perc)<-c("% var reduction")
+table<-rbind(ma,mm,perc)
+colnames(table)<-c("100", "500", "1000", "5000", "10000")
+knitr::kable(table)
+```
+
+<!-- markdown report ends -->

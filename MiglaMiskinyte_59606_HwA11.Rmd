@@ -1,0 +1,362 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+<!-- One needs the code below in order to being able of integrating Latex with R -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+inlineMath: [['$','$'], ['\\(','\\)']],
+processEscapes: true},
+jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+TeX: {
+extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+equationNumbers: {
+autoNumber: "AMS"
+}
+}
+});
+</script>
+
+
+
+<!-- markdown report begins -->
+
+---
+title: "Computational Numerical Statistics  \n Assignment 11"
+author: "Migla Miskinyte Reis"
+date: "26.12.20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!-- the function below does not appear in the text as is here to allow us to use some colored text -->
+
+```{r echo=FALSE}
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, 
+      x)
+  } else x
+}
+```
+
+<!-- instruction below allows for some extra vertical space-->
+&nbsp;
+
+<!-- the font instruction below allows to increase fontsize and the ** gives us boldface -->
+
+<font size="4">
+
+**Exercise 4.** `r colorize("(0.1 points)", "orange")` [**Points: ____**]{style="float:right"}
+</font>
+
+\ Let $X_1$,...,$X_n$ $\sim$ $\textit Pois$($\theta$). Show that $\textit Gamma$(a, b) is a natural conjugate prior for $\theta$.
+
+\ Assuming a parameter $\alpha$ $\in$ (0, $\infty$) from $\textit Pois$ and prior distribution for $\alpha$ is $\textit Gamma$(a, b) distribution, we can write a prior for $\alpha$ :
+
+
+\begin{center}
+
+$f_{\alpha}$($\theta$) = $\dfrac{b^a}{\Gamma(a)}\theta^{(a-1)}e^{-b\theta} $
+
+\end{center}
+
+
+\ and a likelihood function: 
+
+
+\begin{center}
+
+
+$f_{X|\alpha}$($x_1,...,x_n|\alpha$) = ${\displaystyle \prod_{i=1}^{n}}\dfrac{\theta^{x_i}e^{-\theta}}{x_i!}$
+
+
+
+\end{center}
+
+
+\ If we ignore constants that do not depend on $\theta$, the posterior distribution of $\alpha$ parameter given that:
+
+
+\begin{center}
+
+$X_1$=$x_1$,...,$X_n$=$x_n$
+
+\end{center}
+
+\ is 
+
+
+\begin{center}
+
+$f_{\alpha|X}$($\alpha|x_1,...,x_n$) = $f_{X|\alpha}$($x_1,...,x_n|\alpha$)$f_{\alpha}(\theta)$ =
+
+
+\end{center}
+
+
+\begin{center}
+
+
+= ${\displaystyle \prod_{i=1}^{n}}\theta^{x_i}e^{-\theta}\theta^{(a-1)}e^{-b\theta}$
+
+\end{center}
+
+
+\begin{center}
+
+
+= $\theta^{c+a-1}e^{-(n+b)\theta}$,
+
+\end{center}
+
+\ where c is equal to $x_1$+...+$x_n$. We can see that this equation is the same as probability density function of the gamma distribution $\textit Gamma$(c+a,n+b), so that means that the posterior distribution of parameter $\alpha$ must be $\textit Gamma$(c+a,n+b). Because the prior and posterior are both gamma distributions, the gamma distribution is a natural conjugate prior in the Poisson model.
+
+
+**Exercise 6.** `r colorize("(0.1 points)", "red")` [**Points: ____**]{style="float:right"}
+</font>
+
+\ Consider a drug to be given for the relief of chronic pain and that experience with similar
+compounds has suggested that response rates, say $\theta$, between 0.2 and 0.6 could be
+feasible.
+\ Let Y be the number of patients that experienced pain relief (positive response) in a
+sample of n treated patients. One has $Y$ $\sim$ $\textit Bin$($n,\theta$).
+
+\ According to the prior information above, a prior for $\theta$ should be chosen such that it has
+mean $\mu$ = $\dfrac{0.2+0.6}{2}$=0.4 and such that the standard deviation $\sigma$ is so that $\mu$ $\pm$ 2 x $\sigma$ gives us the interval [0.2, 0.6], i.e, $\sigma$ = 0.1.
+\ Assume that n = 20 volunteers were treated with the compound and that out of those we
+observed y = 15 positive responses to treatment.
+
+
+**6.1**
+\ Given that the Beta distribution is a conjugate prior for the Binomial model, identify
+the prior distribution’s hyperparameters.
+
+
+\ Given $\theta$ $\sim$ $\textit Beta$(a,b) is our prior for Binomial model, we know that prior mean is: 
+
+\begin{center}
+
+
+E($\theta$) =  $\dfrac{a}{a+b}$=0.4
+
+\end{center}
+
+From here:
+
+\begin{center}
+
+
+b=1.5a
+
+\end{center}
+
+We also know that standard deviation $\sigma$ = 0.1 and variance for prior Beta distribution is:
+
+
+\begin{center}
+
+
+Var($\theta$) = $\dfrac{ab}{(a+b)^2(a+b+1)}$=$SD^2$=0.01
+
+\end{center}
+
+We substitute b=1.5a and solve the previous equation, where we find a=$\dfrac{46}{5}$=9.2, so b = 13.8. From here we can see that our prior Beta(a,b) is approximately Beta (9,14).
+
+
+**6.2**
+
+\ Derive the posterior distribution p($\theta$|y).
+\ We know that in order to calculate posterior distribution for the Beta-Binomial case, we can derive a very general relationship between the likelihood, prior, and posterior: $p(\theta|X) \propto p(\theta)p(X|\theta)$. Given the Binomial likelihood up to proportionality (ignoring the constant):$\theta^y (1-\theta)^{n-y}$ and given the prior, also up to proportionality,$\theta^{a-1} (1-\theta)^{b-1}$, we can write: 
+
+\begin{center}
+
+
+$\theta^y (1-\theta)^{n-y} \theta^{a-1} (1-\theta)^{b-1} = \theta^{a+y-1} (1-\theta)^{b+n-y-1}$
+
+
+\end{center}
+
+From this given Binomial likelihood $(n,y|\theta)$ and prior Beta(a,b), our posterior will be:
+
+
+\begin{center}
+
+
+$Beta(a+y,b+n-y)$
+
+
+\end{center}
+
+
+So, in is simply $Beta(9+15,14+20-15)$ = $Beta(24,19)$.
+
+
+
+**6.3**
+Given the observed data, plot the likelihood versus the prior and the posterior as in
+the class $\textbf {Example 2}$.
+
+
+```{r}
+n = 20; y = 15; a = 9; b = 14
+
+# priori Beta(9,14)
+curve(dbeta(x,a,b),from=0,to=1,lwd=2,
+type="l",ylab="density",
+xlab=expression(theta),
+cex.lab=1.5,cex.main=2,
+lty=3,ylim=c(0,6))
+# posteriori Beta(24,19)
+curve(dbeta(x,a+y,b+n-y),add=T,lwd=2,
+type="l",ylab="density",cex.lab=1.5,
+cex.main=2)
+# proportional likelihood Beta(16,6)
+curve(dbeta(x,y+1,n-y+1),add=T,col=4,lwd=2)
+legend(0.25, 14,
+legend=c("prior","posterior","likelihood"),
+col=c(1,1,4),lty=c(3,1,1),cex=1,
+lwd=c(1,2,2))
+box(lwd=2)
+```
+
+**6.4**
+
+\ Compute the Bayes estimate of $\theta$ for the quadratic loss and compare it with the ML
+estimate.
+
+```{r}
+
+theta.mle = y/n; theta.mle; #calculating ML estimate
+```
+
+```{r}
+#Prior mean
+e.theta.prior = a/(a+b); e.theta.prior #calculating theta prior
+```
+
+```{r}
+e.theta.post = (a+y)/(a+b+n); e.theta.post #theta postoreior
+```
+
+\ Now we will compute Bayes estimate of $\theta$ for the quadratic loss. Our prior for $\theta$ $\sim$ $\textit Beta$(9,14) and posterior $\theta|y$ $\sim$ $\textit Beta$(24,19).
+
+\begin{center}
+
+
+$\hat\theta_B$=E($\theta$|y)=$\dfrac{24}{24+19}$=0.058
+
+
+\end{center}
+
+Or, calculating in R: 
+
+```{r}
+a=24; b=19
+# Bayes estimator with quadratic loss
+e.theta = a/(a+b); e.theta
+```
+
+\ Bayes estimate of $\theta$ for the quadratic loss is 0.558, while ML estimate is 0.75.
+
+
+
+**6.5**
+\ Compute both the 90% CC and 90%-HPD intervals for $\theta$.
+\ We could also display the 90% credible interval, the range over which we are 90% certain the true value of  
+$\theta$ lies, given the data and model.
+
+```{r}
+
+qbeta(c(0.05,0.95),shape1=24,shape2=19)
+
+```
+
+```{r}
+library(HDInterval)
+HDP = hdi(qbeta, 0.90, shape1=24, shape2=19); HDP
+```
+
+
+**6.6**
+
+\ Test the researcher’s hypothesis that the percentage of treated individuals that
+experience a positive result is less or equal than 35%.
+
+\ We want to test the following hypothesis:
+
+
+
+\begin{center}
+
+
+$H_0$:Y<=0.35 vs $H_1$:Y>0.35.
+
+
+\end{center}
+
+
+\ For this we need to calculate the prior odds: 
+
+```{r}
+prior.odds = pbeta(0.35,shape1=9, shape2=14)/(1-pbeta(0.35,shape1=9, shape2=14)); prior.odds
+```
+\ And then compute posterior odds:
+
+```{r}
+posterior.odds = pbeta(0.35,shape1=24, shape2=19)/(1-pbeta(0.35,shape1=24, shape2=19)); posterior.odds
+```
+
+\ We then calculate the Bayes factor for $H_0$ hypothesis:
+
+
+```{r}
+BF = posterior.odds/prior.odds; BF
+```
+
+We reject our null hypothesis assuming that we test at 95% significance level.
+
+
+**6.7**
+
+\ What’s the expected number of treated patients that experience pain relief in a future
+sample of m = 5?
+
+\ Given the posterior Beta(9,14) distribution as our prior for now, one now wishes to predict the
+number of treated patients that experience pain relief with m=5, for this we need to compute E(z|y). We will use the R library LearnBayes  to compute these probabilities at once via function pbetap().
+
+```{r}
+library(LearnBayes)
+ab = c(24,19) # posterior (c,d) values are now the prior (a,b) values for pbetap()
+m = 5 # new sample size
+z = 0:m # values of z for which we want to compute the probabilities
+pred = pbetap(ab,m,z) # call the R function
+pred
+
+```
+
+
+```{r}
+e.Z = sum(z*pred); e.Z
+```
+
+The expected mean of the number  treated patients that experience pain relief in a future sample of
+m = 5 inspected individuals is E(Z) = 2.8.
+
+
+
+
+
+
+
+
+<!-- markdown report ends -->
