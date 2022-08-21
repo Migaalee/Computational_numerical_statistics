@@ -1,0 +1,101 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+<!-- One needs the code below in order to being able of integrating Latex with R -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+inlineMath: [['$','$'], ['\\(','\\)']],
+processEscapes: true},
+jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+TeX: {
+extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+equationNumbers: {
+autoNumber: "AMS"
+}
+}
+});
+</script>
+
+<!-- markdown report begins -->
+
+---
+title: "Computational Numerical Statistics  \n Assignment 1"
+author: "Migla Miskinyte Reis"
+date: "30.09.20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!-- the function below does not appear in the text as is here to allow us to use some colored text -->
+
+```{r echo=FALSE}
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color, 
+      x)
+  } else x
+}
+```
+
+<!-- instruction below allows for some extra vertical space-->
+&nbsp;
+
+<!-- the font instruction below allows to increase fontsize and the ** gives us boldface -->
+
+<font size="4">
+
+**Exercise 2.** `r colorize("(0.1 points)", "red")` [**Points: ____**]{style="float:right"}
+</font>
+
+Consider the random variable $X\sim tn$.
+  
+(a) Define in R a function called $\texttt{pdf.t}(x,df)$ that corresponds to the p.d.f. of  X and use it to compute $\texttt{pdf.t}(1,3)$. Compare the result with the one given by the built-in R function $\texttt{d.t}()$.
+
+```{r}
+pdf.t<-function(x,n){
+  gamma((n+1)/2)/(sqrt(n*pi)*gamma(n/2))*(1 + x^2/n)^-((n+1)/2) #my function
+}
+
+pdf.t(1,3)                                                    #my calculations
+
+dt(1,3)                                                       #equals to built-in functions
+```
+
+
+(b) Confirm that $\displaystyle\int_{-\infty}^{+\infty}\texttt{pdf.dt}(x)dx=1$. 
+
+```{r}
+pdf.t1 = function(x) {
+  return(pdf.t(x, 1)) 
+  }                              #I fixed my degrees of freedom to 1
+
+integrate(pdf.t1, lower = -Inf, upper=Inf)    #integrate for x
+
+
+```
+
+
+
+(c) Use R built-in functions to construct the usual $tn$ table with $n$ = 1,...,31.
+
+```{r}
+
+alpha<-c(0.1,0.05,0.025,0.01,0.005, 0.001, 0.0005) # make a vector for t distribution probabilities (alpha)
+n<-c(seq(1:31))                     # n is my degree of freedom (df)
+tn_table<-sapply((1-alpha),function(x) qt(x, df=n)) #using built-in qt quantile function
+colnames(tn_table)<-alpha
+print(tn_table)
+
+```
+
+<!-- markdown report ends -->
